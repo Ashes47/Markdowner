@@ -112,8 +112,13 @@ GET /download_screenshot?file=12345678.png
 
 ---
 ## Minimal UI (Optional)
+### Homepage
 ![Home Page](./assests/homepage.png) 
+
+### Markdown Conversion
 ![Markdown](./assests/md.png) 
+
+### Screenshot
 ![Screenshot](./assests/ss.png) 
 
 ## 📌 Future Improvements
