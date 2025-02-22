@@ -110,7 +110,7 @@ GET /download_screenshot?file=12345678.png
 ---
 ## 🛠️ Tech Stack
 - **Backend**: FastAPI 🚀
-- **Frontend**: TailwindCSS + JavaScript
+- **Frontend**: HTML, CSS, JavaScript 📝
 - **Headless Browser**: Puppeteer (Pyppeteer) 🖥️
 - **Caching**: Redis for **faster performance**
 
