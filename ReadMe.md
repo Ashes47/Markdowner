@@ -26,17 +26,11 @@
 - Supports **multiple concurrent requests**
 
 ---
-
 ## 🛠️ Installation & Setup
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/your-repo/markdowner.git
-cd markdowner
-```
-
-### **2️⃣ Install Dependencies**
-```sh
-pip install -r requirements.txt
+git clone https://github.com/Ashes47/Markdowner
+cd Markdowner
 ```
 
 ### **3️⃣ Run with Docker**
