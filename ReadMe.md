@@ -110,6 +110,12 @@ GET /download_screenshot?file=12345678.png
 
 ---
 
+---
+## Minimal UI (Optional)
+![Home Page](./assests/homepage.png) 
+![Markdown](./assests/md.png) 
+![Screenshot](./assests/ss.png) 
+
 ## 📌 Future Improvements
 - 🌍 **Multi-language Support**
 - 🖼️ **OCR for Image-based Websites**
@@ -120,9 +126,3 @@ GET /download_screenshot?file=12345678.png
 This project is licensed under the **MIT License**.
 
 ---
-
-### 🚀 Ready to Run?
-```sh
-docker-compose up --build
-```
-🔥 Now visit: **`http://localhost:8000`** and start converting webpages! 🚀  
