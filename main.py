@@ -87,7 +87,7 @@ async def take_screenshot(url: str):
         try:
             await page.goto(url, {"waitUntil": "networkidle2", "timeout": 60000})
             await auto_scroll(page)  # Scroll to ensure full content loads
-            asyncio.sleep(2)
+            await asyncio.sleep(2)
             await page.screenshot({"path": screenshot_path, "fullPage": True})  # Full-page screenshot
 
         finally:
