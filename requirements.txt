@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pyppeteer
+markdownify
+aiofiles
+jinja2
+requests
+redis
+orjson
+beautifulsoup4
+htmlmin
+readability-lxml

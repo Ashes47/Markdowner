@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Markdowner ⚡</title>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-900 p-6">
+    <main class="max-w-4xl w-full text-center">
+        <h1 class="text-4xl font-bold mb-4">Markdowner ⚡</h1>
+        <p class="text-lg text-gray-600">Convert any website into LLM-ready Markdown or take a full-page screenshot.</p>
+
+        <form id="convertForm" class="mt-6 space-y-3">
+            <input id="urlInput" class="h-10 w-full rounded-md border px-3 py-2 text-sm" type="text"
+                placeholder="Enter website URL" required />
+
+            <div class="flex items-center space-x-2">
+                <input id="crawlCheckbox" type="checkbox" class="h-5 w-5">
+                <label for="crawlCheckbox" class="text-sm">Enable subpage crawling</label>
+            </div>
+
+            <input id="subpageLimit" class="h-10 w-full rounded-md border px-3 py-2 text-sm hidden"
+                type="number" min="1" max="50" value="10" />
+
+            <div class="grid grid-cols-2 gap-3">
+                <button id="convertButton" type="submit"
+                    class="h-10 w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                    Convert
+                    <span id="loadingSpinner" class="ml-2 hidden">
+                        <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                            <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" fill="none"></path>
+                        </svg>
+                    </span>
+                </button>
+
+                <button id="screenshotButton" type="button"
+                    class="h-10 w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center">
+                    Screenshot
+                    <span id="screenshotSpinner" class="ml-2 hidden">
+                        <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                            <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" fill="none"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Output Section -->
+        <div id="result" class="mt-4 p-4 bg-white rounded-md shadow hidden">
+            <h2 class="text-xl font-semibold">Markdown Output:</h2>
+            <pre id="markdownOutput" class="p-2 bg-gray-100 rounded text-left text-sm whitespace-pre-wrap"></pre>
+            <a id="downloadLink" class="text-blue-600 underline hidden" href="#">Download Markdown</a>
+        </div>
+
+        <!-- Screenshot Section -->
+        <div id="screenshotResult" class="mt-4 p-4 bg-white rounded-md shadow hidden">
+            <h2 class="text-xl font-semibold">Screenshot:</h2>
+            <img id="screenshotImage" class="w-full rounded-md border shadow" src="" alt="Website Screenshot">
+            <a id="screenshotDownload" class="text-blue-600 underline hidden" href="#" download>Download Screenshot</a>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="mt-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md hidden"></div>
+    </main>
+
+    <script>
+        document.getElementById('crawlCheckbox').addEventListener('change', function() {
+            document.getElementById('subpageLimit').classList.toggle('hidden', !this.checked);
+        });
+
+        document.getElementById('convertForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            // UI Elements
+            const urlInput = document.getElementById('urlInput');
+            const crawlCheckbox = document.getElementById('crawlCheckbox');
+            const subpageLimit = document.getElementById('subpageLimit');
+            const convertButton = document.getElementById('convertButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const markdownOutput = document.getElementById('markdownOutput');
+            const downloadLink = document.getElementById('downloadLink');
+            const resultDiv = document.getElementById('result');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Clear previous results
+            markdownOutput.innerText = "";
+            downloadLink.classList.add("hidden");
+            resultDiv.classList.add("hidden");
+            errorMessage.classList.add("hidden");
+            errorMessage.innerText = "";
+
+            // Disable button & show spinner
+            convertButton.disabled = true;
+            loadingSpinner.classList.remove("hidden");
+
+            // Prepare API Request
+            const url = urlInput.value;
+            const crawlSubpages = crawlCheckbox.checked;
+            const subpageLimitValue = subpageLimit.value;
+
+            try {
+                const response = await fetch(`/convert?url=${encodeURIComponent(url)}&crawl_subpages=${crawlSubpages}&subpage_limit=${subpageLimitValue}`);
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.detail || "Unknown error");
+
+                // Show Markdown Output
+                markdownOutput.innerText = data.markdown;
+                downloadLink.href = data.file;
+                downloadLink.classList.remove("hidden");
+                resultDiv.classList.remove("hidden");
+            } catch (error) {
+                errorMessage.innerText = "❌ Error: " + error.message;
+                errorMessage.classList.remove("hidden");
+            } finally {
+                // Re-enable button & hide spinner
+                convertButton.disabled = false;
+                loadingSpinner.classList.add("hidden");
+            }
+        });
+
+        document.getElementById('screenshotButton').addEventListener('click', async function () {
+            const urlInput = document.getElementById('urlInput');
+            const screenshotButton = document.getElementById('screenshotButton');
+            const screenshotSpinner = document.getElementById('screenshotSpinner');
+            const screenshotImage = document.getElementById('screenshotImage');
+            const screenshotDownload = document.getElementById('screenshotDownload');
+            const screenshotResult = document.getElementById('screenshotResult');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Clear previous screenshot
+            screenshotImage.src = "";
+            screenshotDownload.classList.add("hidden");
+            screenshotResult.classList.add("hidden");
+            errorMessage.classList.add("hidden");
+            errorMessage.innerText = "";
+
+            // Disable button & show spinner
+            screenshotButton.disabled = true;
+            screenshotSpinner.classList.remove("hidden");
+
+            try {
+                const response = await fetch(`/screenshot?url=${encodeURIComponent(urlInput.value)}`);
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.detail || "Unknown error");
+
+                // Show Screenshot
+                screenshotImage.src = data.screenshot;
+                screenshotDownload.href = data.screenshot;
+                screenshotDownload.classList.remove("hidden");
+                screenshotResult.classList.remove("hidden");
+            } catch (error) {
+                errorMessage.innerText = "❌ Error: " + error.message;
+                errorMessage.classList.remove("hidden");
+            } finally {
+                // Re-enable button & hide spinner
+                screenshotButton.disabled = false;
+                screenshotSpinner.classList.add("hidden");
+            }
+        });
+    </script>
+</body>
+</html>
